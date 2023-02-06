@@ -5,6 +5,7 @@ import io
 import os
 import sys
 import subprocess
+import xml.etree.ElementTree as ET
 
 def play_audio(voice_id, api_key, text, endpoint):
     # Construct the API endpoint
@@ -47,6 +48,25 @@ def play_audio(voice_id, api_key, text, endpoint):
         # If the request was not successful, print the error
         print("Error:", response.text)
 
+def get_news_from_rss(url):
+    # Send a GET request to the URL and store the response
+    response = requests.get(url)
+
+    # Parse the XML content of the response
+    root = ET.fromstring(response.content)
+
+    # Find all the news articles in the XML
+    news_articles = root.findall(".//item")
+
+    # Concatenate the titles and descriptions of the news articles
+    text = ""
+    for article in news_articles:
+        title = article.find("title").text
+        description = article.find("description").text
+        text += f"{title}\n{description}\n\n"
+
+    return text
+
 # Set up the argument parser
 parser = argparse.ArgumentParser()
 
@@ -55,6 +75,9 @@ parser.add_argument("-v", "--voice-id", required=False, help="The ID of the voic
 
 # Specify a string of text to convert to speech
 parser.add_argument("-t", "--text", help="The text to convert to speech")
+
+# Add the news argument
+parser.add_argument("-n", "--news", help="Fetch the latest news from the RSS feed and turn it into speech", action="store_true")
 
 # Mutually exclusive arguments
 group = parser.add_mutually_exclusive_group(required=True)
@@ -66,12 +89,6 @@ parser.add_argument("-f", "--file", help="Text file to convert to speech")
 
 # Parse the arguments
 args = parser.parse_args()
-
-# Get the API key from environment variable
-api_key = os.environ.get("API_KEY")
-if api_key is None:
-    print("Error: API_KEY environment variable not set")
-    sys.exit(1)
 
 # Get the API key from environment variable
 api_key = os.environ.get("API_KEY")
@@ -92,8 +109,28 @@ voice_id = "EXAVITQu4vr4xnSDxMaL"
 if args.voice_id:
     voice_id = args.voice_id
 
+# Determine if the --news argument was specified
+if args.news:
+    # URL of the news website's RSS feed
+    url = "https://www.wired.com/feed/tag/ai/latest/rss"
+
+    # Get the news from the RSS feed
+    text = get_news_from_rss(url)
+
+    try:
+        # Call the play_audio function
+        play_audio(voice_id, api_key, text, endpoint)
+
+    except KeyboardInterrupt:
+        print("\nExiting the program...")
+        sys.exit(0)
+
+
+    # Call the play_audio function
+    play_audio(voice_id, api_key, text, endpoint)
+
 # Determine if the --text argument was specified
-if args.text:
+elif args.text:
     text = args.text
 
 # Determine if a text file was passed in
@@ -103,5 +140,10 @@ elif args.file:
 else:
     text = "This is an example text to speech conversion."
 
-# Call the play_audio function
-play_audio(voice_id, api_key, text, endpoint)
+try:
+    # Call the play_audio function
+    play_audio(voice_id, api_key, text, endpoint)
+
+except KeyboardInterrupt:
+    print("\nExiting...")
+    sys.exit(0)
