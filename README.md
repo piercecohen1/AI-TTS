@@ -4,23 +4,23 @@ AI TTS using [ElevenLabs API](https://api.elevenlabs.io/docs)
 # Usage
 The program can be run with the following arguments:
 
-`text_to_voice.py [-h] [-a | -s] [-f FILE] --voice-id VOICE_ID [-t TEXT]`
+`text_to_voice.py [-h] [-a | -s] [-f FILE] [-v VOICE_ID] [-t TEXT]`
 
 
 # Arguments
 
   ```
-  -h, --help               show this help message and exit
+  -h, --help                            show this help message and exit
   
-  -a, --audio              Use /v1/text-to-speech API endpoint
+  -a, --audio                           Use /v1/text-to-speech API endpoint
   
-  -s, --stream             Use /v1/text-to-speech/{voice_id}/stream API endpoint
+  -s, --stream                          Use /v1/text-to-speech/{voice_id}/stream API endpoint
   
-  -f FILE, --file FILE     Text file to convert to speech
+  -f FILE, --file FILE                  Text file to convert to speech
   
-  --voice-id VOICE_ID      Voice ID to use for the conversion
+  -v VOICE_ID, --voice-id VOICE_ID      Voice ID to use for the conversion
   
-  -t TEXT, --text TEXT     Text to convert to speech
+  -t TEXT, --text TEXT                  Text to convert to speech
   ```
   
 The `--voice-id` argument is optional and will default to the ID EXAVITQu4vr4xnSDxMaL if one is not specified. See the [/v1/voices endpoint](https://api.elevenlabs.io/docs#/voices/Get_voices_v1_voices_get) for a list of all available voices.
