@@ -3,6 +3,11 @@ AI to read me the news, among other things.
 
 AI TTS using [ElevenLabs API](https://api.elevenlabs.io/docs)
 
+# Requirements
+You will first need to install the required libraries. You can install them using pip with the following command:
+`pip3 install -r requirements.txt`
+
+
 # Usage
 The program can be run with the following arguments:
 
