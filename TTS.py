@@ -4,6 +4,7 @@ import argparse
 import io
 import os
 import sys
+import subprocess
 
 def play_audio(voice_id, api_key, text, endpoint):
     # Construct the API endpoint
