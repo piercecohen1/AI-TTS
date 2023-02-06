@@ -6,7 +6,7 @@ AI TTS using [ElevenLabs API](https://api.elevenlabs.io/docs)
 # Usage
 The program can be run with the following arguments:
 
-`text_to_voice.py [-h] [-a | -s] [-f FILE] [-v VOICE_ID] [-t TEXT] [--news]`
+`TTS.py [-h] [-a | -s] [-f FILE] [-v VOICE_ID] [-t TEXT] [--news]`
 
 
 # Arguments
