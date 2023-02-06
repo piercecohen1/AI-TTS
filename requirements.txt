@@ -1,4 +1,3 @@
 argparse
 pygame
 requests
-xml.etree.ElementTree
