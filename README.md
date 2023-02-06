@@ -1,4 +1,6 @@
 # AI-TTS
+AI to read me the news, among other things.
+
 AI TTS using [ElevenLabs API](https://api.elevenlabs.io/docs)
 
 # Usage
