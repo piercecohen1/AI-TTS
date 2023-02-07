@@ -7,7 +7,7 @@ import requests
 import pygame
 import xml.etree.ElementTree as ET
 
-def play_audio(voice_id, api_key, text, endpoint):
+def play_audio(voice_id, api_key, text, endpoint, audio_file_name):
     """Plays audio by making a TTS API request.
 
     Args:
@@ -15,7 +15,9 @@ def play_audio(voice_id, api_key, text, endpoint):
     api_key: The API key to authenticate the request.
     text: The text to convert to speech.
     endpoint: The TTS API endpoint to use.
+    audio_file_name: The name of the audio file to be created
     """
+
     api_endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
     if endpoint == "stream":
         api_endpoint += "/stream"
@@ -37,9 +39,9 @@ def play_audio(voice_id, api_key, text, endpoint):
             while pygame.mixer.get_busy():
                 pygame.time.wait(100)
         else:
-            with open("audio.wav", "wb") as f:
+            with open(audio_file_name, "wb") as f:
                 f.write(response.content)
-            subprocess.call(["afplay", "audio.wav"])
+            subprocess.call(["afplay", audio_file_name])
     else:
         print(f"Error: {response.text}")
 
@@ -91,15 +93,20 @@ group2 = parser.add_mutually_exclusive_group(required=True)
 group2.add_argument("-a", "--audio", help="Use /v1/text-to-speech API endpoint", action="store_const", dest="endpoint", const="audio")
 group2.add_argument("-s", "--stream", help="Use /v1/text-to-speech/{voice_id}/stream API endpoint", action="store_const", dest="endpoint", const="stream")
 
+if "--audio" in sys.argv or "-a" in sys.argv:
+    parser.add_argument("-o", "--output", help="The name of the audio file to be created")
+
 args = parser.parse_args()
 
 api_key = os.environ.get("API_KEY")
+
 if api_key is None:
     print("Error: API_KEY environment variable not set")
     sys.exit(1)
 
 voice_id = args.voice_id or "EXAVITQu4vr4xnSDxMaL"
 endpoint = args.endpoint
+audio_file_name = args.output if args.output else "audio.wav"
 
 if args.category:
     text = get_news_by_category(args.category)
@@ -112,7 +119,7 @@ else:
     text = "This is an example text to speech conversion."
 
 try:
-    play_audio(voice_id, api_key, text, endpoint)
+    play_audio(voice_id, api_key, text, endpoint, audio_file_name)
 except KeyboardInterrupt:
     print("\nExiting the program...")
     sys.exit(0)
