@@ -106,7 +106,6 @@ if api_key is None:
 
 voice_id = args.voice_id or "EXAVITQu4vr4xnSDxMaL"
 endpoint = args.endpoint
-audio_file_name = args.output if args.output else "audio.wav"
 
 if args.category:
     text = get_news_by_category(args.category)
@@ -119,7 +118,13 @@ else:
     text = "This is an example text to speech conversion."
 
 try:
+    if args.endpoint == "stream":
+        audio_file_name = None
+    else:
+        audio_file_name = args.output if args.output else "audio.wav"
+
     play_audio(voice_id, api_key, text, endpoint, audio_file_name)
+
 except KeyboardInterrupt:
     print("\nExiting the program...")
     sys.exit(0)
