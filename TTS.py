@@ -76,8 +76,23 @@ parser.add_argument("-v", "--voice-id", required=False, help="The ID of the voic
 # Specify a string of text to convert to speech
 parser.add_argument("-t", "--text", help="The text to convert to speech")
 
-# Add the news argument
-parser.add_argument("-n", "--news", help="Fetch the latest news from the RSS feed and turn it into speech", action="store_true")
+# AI argument to read from AI RSS feed
+parser.add_argument("--AI", help="Read the latest AI news", action="store_true")
+
+# Gear argument to read from gear RSS feed
+parser.add_argument("--gear", help="Read the latest gear news", action="store_true")
+
+# Gear argument to read from gear RSS feed
+parser.add_argument("--business", help="Read the latest business news", action="store_true")
+
+# Culture argument to read from culture RSS feed
+parser.add_argument("--culture", help="Read the latest culture news", action="store_true")
+
+# Science argument to read from science RSS feed
+parser.add_argument("--science", help="Read the latest science news", action="store_true")
+
+# Security argument to read from security RSS feed
+parser.add_argument("--security", help="Read the latest security news", action="store_true")
 
 # Mutually exclusive arguments
 group = parser.add_mutually_exclusive_group(required=True)
@@ -109,9 +124,9 @@ voice_id = "EXAVITQu4vr4xnSDxMaL"
 if args.voice_id:
     voice_id = args.voice_id
 
-# Determine if the --news argument was specified
-if args.news:
-    # URL of the news website's RSS feed
+# Determine if the --AI argument was specified
+if args.AI:
+    # URL of the news website's AI RSS feed
     url = "https://www.wired.com/feed/tag/ai/latest/rss"
 
     # Get the news from the RSS feed
@@ -125,9 +140,81 @@ if args.news:
         print("\nExiting the program...")
         sys.exit(0)
 
+# Determine if the --gear argument was specified
+elif args.gear:
+    # URL of the news website's gear RSS feed
+    url = "https://www.wired.com/feed/category/gear/latest/rss"
 
-    # Call the play_audio function
-    play_audio(voice_id, api_key, text, endpoint)
+    # Get the news from the RSS feed
+    text = get_news_from_rss(url)
+
+    try:
+        # Call the play_audio function
+        play_audio(voice_id, api_key, text, endpoint)
+
+    except KeyboardInterrupt:
+        print("\nExiting the program...")
+        sys.exit(0)
+
+elif args.business:
+    # URL of the news website's business RSS feed
+    url = "https://www.wired.com/feed/category/business/latest/rss"
+
+    # Get the news from the RSS feed
+    text = get_news_from_rss(url)
+
+    try:
+        # Call the play_audio function
+        play_audio(voice_id, api_key, text, endpoint)
+
+    except KeyboardInterrupt:
+        print("\nExiting the program...")
+        sys.exit(0)
+
+elif args.culture:
+    # URL of the news website's culture RSS feed
+    url = "https://www.wired.com/feed/category/culture/latest/rss"
+
+    # Get the news from the RSS feed
+    text = get_news_from_rss(url)
+
+    try:
+        # Call the play_audio function
+        play_audio(voice_id, api_key, text, endpoint)
+
+    except KeyboardInterrupt:
+        print("\nExiting the program...")
+        sys.exit(0)
+
+elif args.science:
+    # URL of the news website's science RSS feed
+    url = "https://www.wired.com/feed/category/science/latest/rss"
+
+    # Get the news from the RSS feed
+    text = get_news_from_rss(url)
+
+    try:
+        # Call the play_audio function
+        play_audio(voice_id, api_key, text, endpoint)
+
+    except KeyboardInterrupt:
+        print("\nExiting the program...")
+        sys.exit(0)
+
+elif args.security:
+    # URL of the news website's security RSS feed
+    url = "https://www.wired.com/feed/category/security/latest/rss"
+
+    # Get the news from the RSS feed
+    text = get_news_from_rss(url)
+
+    try:
+        # Call the play_audio function
+        play_audio(voice_id, api_key, text, endpoint)
+
+    except KeyboardInterrupt:
+        print("\nExiting the program...")
+        sys.exit(0)
 
 # Determine if the --text argument was specified
 elif args.text:
@@ -137,6 +224,7 @@ elif args.text:
 elif args.file:
     with open(args.file, "r") as f:
         text = f.read()
+
 else:
     text = "This is an example text to speech conversion."
 
