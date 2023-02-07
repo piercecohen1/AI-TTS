@@ -29,6 +29,8 @@ The program can be run with the following arguments:
   
   -t TEXT, --text TEXT                  Text to convert to speech
   
+  -o OUTPUT, --output OUTPUT            The name of the audio file to be created. Default is "audio.wav".
+  
   --AI                                  Read the latest AI news
 
   --gear                                Read the latest gear news
@@ -59,9 +61,13 @@ To directly input a string to convert to speech:
 
 To fetch the latest AI news and read it using text to speech, run one of the following commands.
 
-To generate an audio file:
+To generate an audio file with the default name audio.wav:
 
 `python3 TTS.py -a --AI`
+
+To generate an audio file with a custom name:
+
+`python3 TTS.py -a --AI -o AI_news.wav`
 
 To stream the audio only:
 
