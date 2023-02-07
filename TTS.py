@@ -76,28 +76,31 @@ parser.add_argument("-v", "--voice-id", required=False, help="The ID of the voic
 # Specify a string of text to convert to speech
 parser.add_argument("-t", "--text", help="The text to convert to speech")
 
+# Mutually exclusive arguments
+group = parser.add_mutually_exclusive_group()
+
 # AI argument to read from AI RSS feed
-parser.add_argument("--AI", help="Read the latest AI news", action="store_true")
+group.add_argument("--AI", help="Read the latest AI news", action="store_true")
 
 # Gear argument to read from gear RSS feed
-parser.add_argument("--gear", help="Read the latest gear news", action="store_true")
+group.add_argument("--gear", help="Read the latest gear news", action="store_true")
 
 # Gear argument to read from gear RSS feed
-parser.add_argument("--business", help="Read the latest business news", action="store_true")
+group.add_argument("--business", help="Read the latest business news", action="store_true")
 
 # Culture argument to read from culture RSS feed
-parser.add_argument("--culture", help="Read the latest culture news", action="store_true")
+group.add_argument("--culture", help="Read the latest culture news", action="store_true")
 
 # Science argument to read from science RSS feed
-parser.add_argument("--science", help="Read the latest science news", action="store_true")
+group.add_argument("--science", help="Read the latest science news", action="store_true")
 
 # Security argument to read from security RSS feed
-parser.add_argument("--security", help="Read the latest security news", action="store_true")
+group.add_argument("--security", help="Read the latest security news", action="store_true")
 
 # Mutually exclusive arguments
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument("-a", "--audio", help="Use /v1/text-to-speech API endpoint", action="store_true")
-group.add_argument("-s", "--stream", help="Use /v1/text-to-speech/{voice_id}/stream API endpoint", action="store_true")
+group2 = parser.add_mutually_exclusive_group(required=True)
+group2.add_argument("-a", "--audio", help="Use /v1/text-to-speech API endpoint", action="store_true")
+group2.add_argument("-s", "--stream", help="Use /v1/text-to-speech/{voice_id}/stream API endpoint", action="store_true")
 
 # Add the optional file argument
 parser.add_argument("-f", "--file", help="Text file to convert to speech")
