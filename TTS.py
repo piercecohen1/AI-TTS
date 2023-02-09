@@ -4,8 +4,12 @@ import os
 import sys
 import subprocess
 import requests
-import pygame
 import xml.etree.ElementTree as ET
+import sys
+# Supress unncessary pygame prompt
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+import pygame
+
 
 def play_audio(voice_id, api_key, text, endpoint, audio_file_name):
     """Plays audio by making a TTS API request.
