@@ -28,9 +28,7 @@ The program can be run with the following arguments:
   -v VOICE_ID, --voice-id VOICE_ID      Voice ID to use for the conversion
   
   -t TEXT, --text TEXT                  Text to convert to speech
-  
-  -o OUTPUT, --output OUTPUT            The name of the audio file to be created. Default is "audio.wav".
-  
+    
   --AI                                  Read the latest AI news
 
   --gear                                Read the latest gear news
@@ -42,6 +40,9 @@ The program can be run with the following arguments:
   --science                             Read the latest science news
 
   --security                            Read the latest security news
+  
+  -o OUTPUT, --output OUTPUT            May be used --audio/-a only. The name of the audio file to be created. If not specified, defaults to "output.wav"
+
   ```
 
 The `--voice-id` argument is optional and will default to the ID EXAVITQu4vr4xnSDxMaL if one is not specified. See the [/v1/voices endpoint](https://api.elevenlabs.io/docs#/voices/Get_voices_v1_voices_get) for a list of all available voices.
