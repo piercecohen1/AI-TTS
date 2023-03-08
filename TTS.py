@@ -97,8 +97,7 @@ group2 = parser.add_mutually_exclusive_group(required=True)
 group2.add_argument("-a", "--audio", help="Use /v1/text-to-speech API endpoint", action="store_const", dest="endpoint", const="audio")
 group2.add_argument("-s", "--stream", help="Use /v1/text-to-speech/{voice_id}/stream API endpoint", action="store_const", dest="endpoint", const="stream")
 
-if "--audio" in sys.argv or "-a" in sys.argv:
-    parser.add_argument("-o", "--output", help="The name of the audio file to be created")
+parser.add_argument("-o", "--output", help="May be used --audio/-a only. The name of the audio file to be created", dest="output", required=False)
 
 args = parser.parse_args()
 
@@ -123,11 +122,19 @@ else:
 
 try:
     if args.endpoint == "stream":
+        if args.output:
+            raise Exception("Error: -s and -o cannot be used together")
         audio_file_name = None
+    elif args.endpoint == "audio":
+        audio_file_name = args.output if args.output else "output.wav"
     else:
-        audio_file_name = args.output if args.output else "audio.wav"
+        audio_file_name = None
 
     play_audio(voice_id, api_key, text, endpoint, audio_file_name)
+
+except Exception as e:
+    print(e)
+    sys.exit(1)
 
 except KeyboardInterrupt:
     print("\nExiting the program...")
