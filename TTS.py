@@ -97,7 +97,7 @@ group2 = parser.add_mutually_exclusive_group(required=True)
 group2.add_argument("-a", "--audio", help="Use /v1/text-to-speech API endpoint", action="store_const", dest="endpoint", const="audio")
 group2.add_argument("-s", "--stream", help="Use /v1/text-to-speech/{voice_id}/stream API endpoint", action="store_const", dest="endpoint", const="stream")
 
-parser.add_argument("-o", "--output", help="May be used --audio/-a only. The name of the audio file to be created", dest="output", required=False)
+parser.add_argument("-o", "--output", help="May be used --audio/-a only. The name of the audio file to be created. If not specified, defaults to output.wav", dest="output", required=False)
 
 args = parser.parse_args()
 
