@@ -7,6 +7,45 @@ AI TTS using [ElevenLabs API](https://api.elevenlabs.io/docs)
 You will first need to install the required libraries. You can install them using pip with the following command:
 `pip3 install -r requirements.txt`
 
+To use the program, you need to supply your ElevenLabs API key. You can obtain an API key by registering [here](https://elevenlabs.io). After obtaining your API key, you should set it as an environment variable named API_KEY. 
+
+Follow these steps to temporarily set the API_KEY environment variable:
+
+- On Linux or macOS:
+  1. Open a terminal window.
+  2. Run the following command: `export API_KEY=your_api_key_here`
+  3. Make sure to replace `your_api_key_here` with your actual API key.
+
+- On Windows:
+  1. Open a Command Prompt or PowerShell window.
+  2. Run the following command: `setx API_KEY "your_api_key_here"`
+  3. Make sure to replace `your_api_key_here` with your actual API key.
+  4. Close and reopen the Command Prompt or PowerShell window for the change to take effect.
+
+**Follow these steps to set the API_KEY environment variable persistently (recommended):**
+
+- On Linux or macOS:
+  1. Open a terminal window.
+  2. Open your `.bashrc` file with your favorite text editor. For example: `nano ~/.bashrc`
+  3. Add the following line at the end of the file: `export API_KEY=your_api_key_here`
+  4. Make sure to replace `your_api_key_here` with your actual API key.
+  5. Save the changes and exit the text editor.
+  6. Run `source ~/.bashrc` in the terminal to load the changes.
+
+- On Windows:
+  1. Right-click on the Computer icon and select Properties.
+  2. Click on the Advanced system settings link.
+  3. In the System Properties window, click on the Advanced tab.
+  4. Click on the Environment Variables button.
+  5. In the System Variables section, click on the New button.
+  6. In the New System Variable window, enter `API_KEY` for the Variable name and your actual API key for the Variable value.
+  7. Click OK to save the changes, and then click OK on the Environment Variables and System Properties windows.
+  8. Close and reopen any Command Prompt or PowerShell windows for the changes to take effect.
+
+
+Once the API_KEY environment variable is set, you can run the program as described in the Usage section below.
+
+
 
 # Usage
 The program can be run with the following arguments:
