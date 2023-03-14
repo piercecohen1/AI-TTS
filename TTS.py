@@ -6,10 +6,46 @@ import subprocess
 import requests
 import xml.etree.ElementTree as ET
 import sys
+from bs4 import BeautifulSoup
+import re
 # Supress unncessary pygame prompt
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 
+
+def url_to_text(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    article = soup.find('article')
+
+    # Remove unnecessary sections
+    for section in article.find_all(['aside', 'header', 'footer', 'figure', 'figcaption', 'nav', 'script']):
+        section.decompose()
+
+    # Remove hyperlinks and images from the article
+    for link in article.find_all('a'):
+        link.decompose()
+    for img in article.find_all('img'):
+        img.decompose()
+
+    # Extract the text from the article
+    text = article.get_text(separator=' ')
+
+    # Remove unwanted characters and normalize whitespace
+    text = re.sub(r'[\n]+', '\n', text)
+    text = re.sub(r'[/;:]', '', text)
+    text = re.sub(r'\d{4}', '', text)
+    text = re.sub(r'[\n]*\w*Comments[\n]*', '', text)
+    text = re.sub(r'(\n\s*)+\n+', '\n\n', text).strip()
+    text = re.sub(r' +', ' ', text)
+    text = re.sub(r' ?([.,?!])', r'\1', text)
+
+    # Remove other unwanted patterns
+    text = re.sub(r'Listen\s+\d+\s+min.*Share', '', text)
+    text = re.sub(r'Most Popular', '', text)
+    text = re.sub(r'From our sponsor', '', text)
+
+    return text
 
 def play_audio(voice_id, api_key, text, endpoint, audio_file_name):
     """Plays audio by making a TTS API request.
@@ -92,6 +128,7 @@ group.add_argument("--science", help="Read the latest science news", action="sto
 group.add_argument("--security", help="Read the latest security news", action="store_const", dest="category", const="security")
 parser.add_argument("-t", "--text", help="The text to convert to speech")
 parser.add_argument("-f", "--file", help="Text file to convert to speech")
+parser.add_argument("-u", "--url", help="BETA: URL of article to convert to speech")
 
 group2 = parser.add_mutually_exclusive_group(required=True)
 group2.add_argument("-a", "--audio", help="Use /v1/text-to-speech API endpoint", action="store_const", dest="endpoint", const="audio")
@@ -117,6 +154,8 @@ elif args.text:
 elif args.file:
     with open(args.file, "r") as f:
         text = f.read()
+elif args.url:
+    text = url_to_text(args.url)
 else:
     text = "This is an example text to speech conversion."
 
