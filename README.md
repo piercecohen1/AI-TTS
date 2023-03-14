@@ -9,19 +9,6 @@ You will first need to install the required libraries. You can install them usin
 
 To use the program, you need to supply your ElevenLabs API key. You can obtain an API key by registering [here](https://elevenlabs.io). After obtaining your API key, you should set it as an environment variable named API_KEY. 
 
-Follow these steps to temporarily set the API_KEY environment variable:
-
-- On Linux or macOS:
-  1. Open a terminal window.
-  2. Run the following command: `export API_KEY=your_api_key_here`
-  3. Make sure to replace `your_api_key_here` with your actual API key.
-
-- On Windows:
-  1. Open a Command Prompt or PowerShell window.
-  2. Run the following command: `setx API_KEY "your_api_key_here"`
-  3. Make sure to replace `your_api_key_here` with your actual API key.
-  4. Close and reopen the Command Prompt or PowerShell window for the change to take effect.
-
 **Follow these steps to set the API_KEY environment variable persistently (recommended):**
 
 - On Linux or macOS:
@@ -41,6 +28,21 @@ Follow these steps to temporarily set the API_KEY environment variable:
   6. In the New System Variable window, enter `API_KEY` for the Variable name and your actual API key for the Variable value.
   7. Click OK to save the changes, and then click OK on the Environment Variables and System Properties windows.
   8. Close and reopen any Command Prompt or PowerShell windows for the changes to take effect.
+
+
+Or, you can set the API_KEY environment variable temporarily, for the current session only, as follows:
+
+- On Linux or macOS:
+  1. Open a terminal window.
+  2. Run the following command: `export API_KEY=your_api_key_here`
+  3. Make sure to replace `your_api_key_here` with your actual API key.
+
+- On Windows:
+  1. Open a Command Prompt or PowerShell window.
+  2. Run the following command: `setx API_KEY "your_api_key_here"`
+  3. Make sure to replace `your_api_key_here` with your actual API key.
+  4. Close and reopen the Command Prompt or PowerShell window for the change to take effect.
+
 
 
 Once the API_KEY environment variable is set, you can run the program as described in the Usage section below.
