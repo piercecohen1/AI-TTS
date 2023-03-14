@@ -25,6 +25,8 @@ The program can be run with the following arguments:
   
   -f FILE, --file FILE                  Text file to convert to speech
   
+  -u URL, --url URL                     BETA: URL of article to convert to speech
+  
   -v VOICE_ID, --voice-id VOICE_ID      Voice ID to use for the conversion
   
   -t TEXT, --text TEXT                  Text to convert to speech
