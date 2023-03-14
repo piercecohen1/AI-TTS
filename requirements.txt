@@ -1,3 +1,5 @@
 argparse
+beautifulsoup4
 pygame
 requests
+lxml
