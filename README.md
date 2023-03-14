@@ -30,7 +30,7 @@ To use the program, you need to supply your ElevenLabs API key. You can obtain a
   8. Close and reopen any Command Prompt or PowerShell windows for the changes to take effect.
 
 
-Or, you can set the API_KEY environment variable temporarily, for the current session only, as follows:
+Alternatively, you can set the API_KEY environment variable temporarily, for the current session only, as follows:
 
 - On Linux or macOS:
   1. Open a terminal window.
@@ -42,6 +42,7 @@ Or, you can set the API_KEY environment variable temporarily, for the current se
   2. Run the following command: `setx API_KEY "your_api_key_here"`
   3. Make sure to replace `your_api_key_here` with your actual API key.
   4. Close and reopen the Command Prompt or PowerShell window for the change to take effect.
+
 
 
 
