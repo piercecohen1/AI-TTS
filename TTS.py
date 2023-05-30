@@ -105,7 +105,10 @@ def play_audio(voice_id, api_key, text, endpoint, audio_file_name):
         else:
             with open(audio_file_name, "wb") as f:
                 f.write(response.content)
-            subprocess.call(["afplay", audio_file_name])
+            if os.name == 'nt':  # If on Windows, use Windows Media Player
+                subprocess.call(["wmplayer", "/play", "/close", audio_file_name])
+            else: # If on Mac, use afplay
+                subprocess.call(["afplay", audio_file_name])
     else:
         print(f"Error: {response.text}")
 
