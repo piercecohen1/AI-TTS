@@ -14,6 +14,13 @@ from tabulate import tabulate
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 
+def is_tool(name):
+    """Check whether `name` is on PATH."""
+
+    from shutil import which
+
+    return which(name) is not None
+
 def get_voices(api_key):
     url = "https://api.elevenlabs.io/v1/voices"
     headers = {"xi-api-key": api_key}
@@ -107,8 +114,12 @@ def play_audio(voice_id, api_key, text, endpoint, audio_file_name):
                 f.write(response.content)
             if os.name == 'nt':  # If on Windows, use Windows Media Player
                 subprocess.call(["wmplayer", "/play", "/close", audio_file_name])
-            else: # If on Mac, use afplay
+            elif sys.platform == 'darwin': # If on Mac, use afplay
                 subprocess.call(["afplay", audio_file_name])
+            elif sys.platform == 'linux': # If on Linux, use aplay
+                subprocess.call(["aplay", audio_file_name])
+            else:
+                print(f"Unsupported platform: {os.name}")
     else:
         print(f"Error: {response.text}")
 
@@ -143,6 +154,11 @@ def get_news_by_category(category):
         text += f"{title}\n{description}\n\n"
 
     return text
+
+# Check if required playback tools on linux are installed
+if sys.platform == 'linux' and not is_tool('aplay'):
+    print("aplay is not installed. Please install it to continue.")
+    sys.exit(1)
 
 parser = argparse.ArgumentParser()
 group1 = parser.add_mutually_exclusive_group(required=True)
