@@ -117,7 +117,7 @@ def play_audio(voice_id, api_key, text, endpoint, audio_file_name):
             elif sys.platform == 'darwin': # If on Mac, use afplay
                 subprocess.call(["afplay", audio_file_name])
             elif sys.platform == 'linux': # If on Linux, use aplay
-                subprocess.call(["aplay", audio_file_name])
+                subprocess.call(["mpv", audio_file_name])
             else:
                 print(f"Unsupported platform: {os.name}")
     else:
@@ -156,8 +156,8 @@ def get_news_by_category(category):
     return text
 
 # Check if required playback tools on linux are installed
-if sys.platform == 'linux' and not is_tool('aplay'):
-    print("aplay is not installed. Please install it to continue.")
+if sys.platform == 'linux' and not is_tool('mpv'):
+    print("mpv is not installed. Please install it to continue.")
     sys.exit(1)
 
 parser = argparse.ArgumentParser()
