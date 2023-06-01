@@ -157,7 +157,8 @@ def get_news_by_category(category):
 
 # Check if required playback tools on linux are installed
 if sys.platform == 'linux' and not is_tool('mpv'):
-    print("mpv is not installed. Please install it to continue.")
+    print("\n'mpv' is not installed. Please install it to continue.\n")
+    print("\033[1m    sudo apt install mpv\n\033[0m")
     sys.exit(1)
 
 parser = argparse.ArgumentParser()
