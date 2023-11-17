@@ -1,48 +1,16 @@
 import argparse
-import io
 import os
-import sys
-import subprocess
+from elevenlabs import set_api_key, generate, play, stream, voices, VoiceSettings, save
 import requests
-import xml.etree.ElementTree as ET
-import sys
 from bs4 import BeautifulSoup
 import re
-import json
-from tabulate import tabulate
-# Supress unncessary pygame prompt
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-import pygame
+import xml.etree.ElementTree as ET
+import sys
 
-def is_tool(name):
-    """Check whether `name` is on PATH."""
-
-    from shutil import which
-
-    return which(name) is not None
-
-def get_voices(api_key):
-    url = "https://api.elevenlabs.io/v1/voices"
-    headers = {"xi-api-key": api_key}
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-        voices = data["voices"]
-        table_data = [
-            [
-                voice["voice_id"],
-                voice["name"],
-                voice["category"],
-            ]
-            for voice in voices
-        ]
-        print(tabulate(table_data, headers=["Voice ID", "Name", "Category"]))
-    else:
-        print(f"Error: {response.text}")
-
-
-
+def list_voices():
+    available_voices = voices()
+    for voice in available_voices.voices:
+        print(f"Voice ID: {voice.voice_id}, Name: {voice.name}, Category: {voice.category}")
 
 def url_to_text(url):
     response = requests.get(url)
@@ -78,50 +46,6 @@ def url_to_text(url):
 
     return text
 
-def play_audio(voice_id, api_key, text, endpoint, audio_file_name):
-    """Plays audio by making a TTS API request.
-
-    Args:
-    voice_id: The ID of the voice to use.
-    api_key: The API key to authenticate the request.
-    text: The text to convert to speech.
-    endpoint: The TTS API endpoint to use.
-    audio_file_name: The name of the audio file to be created
-    """
-
-    api_endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-    if endpoint == "stream":
-        api_endpoint += "/stream"
-
-    headers = {
-        "xi-api-key": api_key
-    }
-    data = {
-        "text": text
-    }
-
-    response = requests.post(api_endpoint, headers=headers, json=data)
-
-    if response.status_code == 200:
-        if endpoint == "stream":
-            pygame.init() # To use a custom sound device, use pygame.mixer.init(devicename='name_of_device') here
-            sound = pygame.mixer.Sound(io.BytesIO(response.content))
-            sound.play()
-            while pygame.mixer.get_busy():
-                pygame.time.wait(100)
-        else:
-            with open(audio_file_name, "wb") as f:
-                f.write(response.content)
-            if os.name == 'nt':  # If on Windows, use Windows Media Player
-                subprocess.call(["wmplayer", "/play", "/close", audio_file_name])
-            elif sys.platform == 'darwin': # If on Mac, use afplay
-                subprocess.call(["afplay", audio_file_name])
-            elif sys.platform == 'linux': # If on Linux, use aplay
-                subprocess.call(["mpv", audio_file_name])
-            else:
-                print(f"Unsupported platform: {os.name}")
-    else:
-        print(f"Error: {response.text}")
 
 def get_news_by_category(category):
     """Returns the news for the given category by parsing an RSS feed.
@@ -155,22 +79,26 @@ def get_news_by_category(category):
 
     return text
 
-# Check if required playback tools on linux are installed
-if sys.platform == 'linux' and not is_tool('mpv'):
-    print("\n'mpv' is not installed. Please install it to continue.\n")
-    print("\033[1m    sudo apt install mpv\n\033[0m")
+# Get ElevenLabs API key from environment variable
+api_key = os.environ.get("ELEVENLABS_API_KEY")
+
+if api_key is None:
+    print("Error: API_KEY environment variable not set")
     sys.exit(1)
 
+set_api_key(api_key)
+
+# Setup argparse for CLI
 parser = argparse.ArgumentParser()
 group1 = parser.add_mutually_exclusive_group(required=True)
 group1.add_argument("-a", "--audio", help="Use /v1/text-to-speech API endpoint", action="store_const", dest="endpoint", const="audio")
 group1.add_argument("-s", "--stream", help="Use /v1/text-to-speech/{voice_id}/stream API endpoint", action="store_const", dest="endpoint", const="stream")
 group1.add_argument("--get-voices", help="Retrieve the available voices", action="store_true")
 
-parser.add_argument("-v", "--voice-id", help="The ID of the voice to use")
+parser.add_argument("-v", "--voice-id", help="Voice ID to use for the conversion")
 
 group2 = parser.add_mutually_exclusive_group(required=False)
-group2.add_argument("-t", "--text", help="The text to convert to speech")
+group2.add_argument("-t", "--text", help="Text to convert to speech")
 group2.add_argument("-f", "--file", help="Text file to convert to speech")
 group2.add_argument("-u", "--url", help="BETA: URL of article to convert to speech")
 group2.add_argument("--ai", help="Read the latest AI news", action="store_const", dest="category", const="ai")
@@ -180,7 +108,8 @@ group2.add_argument("--culture", help="Read the latest culture news", action="st
 group2.add_argument("--science", help="Read the latest science news", action="store_const", dest="category", const="science")
 group2.add_argument("--security", help="Read the latest security news", action="store_const", dest="category", const="security")
 
-parser.add_argument("-o", "--output", help="May be used --audio/-a only. The name of the audio file to be created. If not specified, defaults to output.wav", dest="output", required=False)
+parser.add_argument("-m", "--model", help="ElevenLabs model to use", default="eleven_turbo_v2")
+parser.add_argument("-o", "--output", help="Output to a .wav file", dest="output", required=False)
 
 args = parser.parse_args()
 
@@ -190,15 +119,19 @@ if api_key is None:
     print("Error: API_KEY environment variable not set")
     sys.exit(1)
 
-voice_id = args.voice_id or "EXAVITQu4vr4xnSDxMaL"
-endpoint = args.endpoint
+args = parser.parse_args()
 
+# Check that some text input was provided
+if (args.endpoint in ['audio', 'stream']) and not (args.text or args.file or args.url or args.category):
+    print("Error: No text input provided. Please specify text, file, URL, or news category.")
+    sys.exit(1)
+
+# Check for the --get-voices argument first
 if args.get_voices:
-    get_voices(api_key)
-else:
-    voice_id = args.voice_id or "EXAVITQu4vr4xnSDxMaL"
-    endpoint = args.endpoint
+    list_voices()
+    sys.exit(0)
 
+# Determine the text to be converted
 if args.category:
     text = get_news_by_category(args.category)
 elif args.text:
@@ -211,23 +144,24 @@ elif args.url:
 else:
     text = "This is an example text to speech conversion."
 
-try:
-    if not args.get_voices:
-        if args.endpoint == "stream":
-            if args.output:
-                raise Exception("Error: -s and -o cannot be used together")
-            audio_file_name = None
-        elif args.endpoint == "audio":
-            audio_file_name = args.output if args.output else "output.wav"
-        else:
-            audio_file_name = None
+# Prepare arguments for text-to-speech generation
+generate_args = {"text": text, "model": args.model}
+if args.voice_id:
+    generate_args["voice"] = args.voice_id
 
-        play_audio(voice_id, api_key, text, endpoint, audio_file_name)
+# Handle audio streaming
+if args.endpoint == "stream":
+    audio_stream = generate(stream=True, **generate_args)
+    audio_bytes = stream(audio_stream)
+    if args.output:
+        save(audio_bytes, args.output)
 
-except Exception as e:
-    print(e)
+# Handle audio generation and saving
+elif args.endpoint == "audio":
+    audio = generate(**generate_args)
+    if args.output:
+        save(audio, args.output)
+
+else:
+    print("Error: Invalid or missing arguments.")
     sys.exit(1)
-
-except KeyboardInterrupt:
-    print("\nExiting the program...")
-    sys.exit(0)
