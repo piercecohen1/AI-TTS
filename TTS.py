@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import os
 from elevenlabs import set_api_key, generate, play, stream, voices, VoiceSettings, save
@@ -6,6 +8,7 @@ from bs4 import BeautifulSoup
 import re
 import xml.etree.ElementTree as ET
 import sys
+import pyperclip
 
 def list_voices():
     available_voices = voices()
@@ -101,6 +104,7 @@ group2 = parser.add_mutually_exclusive_group(required=False)
 group2.add_argument("-t", "--text", help="Text to convert to speech")
 group2.add_argument("-f", "--file", help="Text file to convert to speech")
 group2.add_argument("-u", "--url", help="BETA: URL of article to convert to speech")
+group2.add_argument("-c", "--clipboard", help="Use text from the system clipboard", action="store_true")
 group2.add_argument("--ai", help="Read the latest AI news", action="store_const", dest="category", const="ai")
 group2.add_argument("--gear", help="Read the latest gear news", action="store_const", dest="category", const="gear")
 group2.add_argument("--business", help="Read the latest business news", action="store_const", dest="category", const="business")
@@ -122,7 +126,7 @@ if api_key is None:
 args = parser.parse_args()
 
 # Check that some text input was provided
-if (args.endpoint in ['audio', 'stream']) and not (args.text or args.file or args.url or args.category):
+if (args.endpoint in ['audio', 'stream']) and not (args.text or args.file or args.url or args.category or args.clipboard):
     print("Error: No text input provided. Please specify text, file, URL, or news category.")
     sys.exit(1)
 
@@ -141,6 +145,8 @@ elif args.file:
         text = f.read()
 elif args.url:
     text = url_to_text(args.url)
+elif args.clipboard:
+    text = pyperclip.paste()
 else:
     text = "This is an example text to speech conversion."
 
@@ -159,6 +165,7 @@ if args.endpoint == "stream":
 # Handle audio generation and saving
 elif args.endpoint == "audio":
     audio = generate(**generate_args)
+    play(audio)
     if args.output:
         save(audio, args.output)
 
